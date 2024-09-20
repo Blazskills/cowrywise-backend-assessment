@@ -10,7 +10,7 @@ urlpatterns = [
         "api/v1/",
         include(
             [
-                path("admin/", include("core_apps.books_management.urls")),
+                path("admin/", include("core_apps.books.urls")),
             ]
         ),
     ),
@@ -19,8 +19,8 @@ urlpatterns = [
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 
-admin.site.site_header = "ADMIN API"
+admin.site.site_header = "FRONTEND API"
 
-admin.site.site_title = "ADMIN API PORTAL"
+admin.site.site_title = "FRONTEND API PORTAL"
 
-admin.site.index_title = "Welcome to Admin Api Portal"
+admin.site.index_title = "Welcome to FRONTEND Api Portal"

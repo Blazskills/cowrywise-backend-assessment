@@ -9,3 +9,5 @@ requests==2.31.0
 argon2-cffi==21.3.0
 pytz==2023.3.post1
 pika
+django-elasticsearch-dsl==7.3.0
+django-elasticsearch-dsl-drf==0.22.5

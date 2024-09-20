@@ -1,0 +1,101 @@
+version: "3.9"
+
+services:
+  es:
+    image: elasticsearch:7.17.9
+    environment:
+      - discovery.type=single-node
+      - ES_JAVA_OPTS=-Xms512m -Xmx512m
+      - ELASTIC_PASSWORD=cowrywise@@!##44
+      - xpack.security.audit.enabled=true
+      - xpack.security.enabled=false
+      - xpack.security.transport.ssl.enabled=false
+      - xpack.security.http.ssl.enabled=false
+    volumes:
+      - es_data:/usr/share/elasticsearch/data
+    container_name: cowrywise-elasticsearch
+    ports:
+      - "9200:9200"
+    networks:
+      - cowrywise-api
+
+  api:
+    build:
+      context: .
+      dockerfile: ./docker/local/django/Dockerfile
+    volumes:
+      - .:/app:z
+      - static_volume:/app/staticfiles
+      - media_volume:/app/mediafiles
+      - logs_volume:/app/logs
+    container_name: cowrywise-app
+    expose:
+      - "8000"
+    env_file:
+      - ./.envs/.local/.django
+      - ./.envs/.local/.postgres
+
+    depends_on:
+      - postgres
+    command: /start
+    image: cowrywise-api-app
+    networks:
+      - cowrywise-api
+
+  postgres:
+    build:
+      context: .
+      dockerfile: ./docker/local/postgres/Dockerfile
+    image: cowrywise_api_database
+    container_name: cowrywise-postgres
+    volumes:
+      - local_postgres_data:/var/lib/postgresql/data
+      - local_postgres_data_backups:/backups
+    env_file:
+      - ./.envs/.local/.postgres
+    networks:
+      - cowrywise-api
+
+  nginx:
+    restart: always
+    depends_on:
+      - api
+    volumes:
+      - static_volume:/app/staticfiles
+      - media_volume:/app/mediafiles
+    container_name: cowrywise-nginx
+
+    build:
+      context: ./docker/local/nginx
+      dockerfile: Dockerfile
+    ports:
+      - "8080:80"
+    networks:
+      - cowrywise-api
+
+  rabbitmq:
+    image: rabbitmq:management
+    container_name: cowrywise-rabbitmq
+    env_file:
+      - ./.envs/.local/.django
+      - ./.envs/.local/.postgres
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    networks:
+      - cowrywise-api
+
+networks:
+  cowrywise-api:
+    driver: bridge
+
+volumes:
+  static_volume:
+  media_volume:
+  local_postgres_data: {}
+  local_postgres_data_backups: {}
+  logs_volume: {}
+  es_data: {}
+  rabbitmq_data: {}

@@ -1,0 +1,93 @@
+.idea
+venv
+**/.git
+.gitignore
+.vscode
+**.djcache
+**app_cache/
+**.log
+
+.idea
+venv
+**/.git
+.gitignore
+.vscode
+db.sqlite3
+*mediafiles
+
+creds.txt
+docker-compose.yml
+ec2key.pem
+reserve.txt
+setup.cfg
+staffs
+
+# AI GENERATED FILES
+
+# Ignore Python bytecode files
+*.pyc
+*.pyo
+__pycache__/
+
+# Ignore virtual environment directories
+venv/
+env/
+ENV/
+
+# Ignore database files
+*.sqlite3
+
+# Ignore Django log files
+*.log
+
+# Ignore media files
+media/
+mediafiles/
+
+# Ignore static files (collected)
+# staticfiles/
+
+# Ignore local development settings
+.env
+.local.env
+.envs/.local/
+.envs/.sample/
+
+# Ignore system files
+.DS_Store
+*.swp
+*.swo
+*~
+.idea/
+.vscode/
+*.sublime-project
+*.sublime-workspace
+
+# Ignore Git files
+.git/
+.gitignore
+
+# Ignore Docker-related files
+docker-compose.override.yml
+docker-compose.yml
+# Ignore coverage and test reports
+.coverage
+coverage.xml
+htmlcov/
+reports/
+*.cover
+
+# Ignore build files
+build/
+dist/
+*.egg-info/
+.eggs/
+
+# Ignore the migrations
+# **/migrations/*
+# !**/migrations/__init__.py
+
+# Ignore documentation files
+docs/
+*.md
+*.rst
