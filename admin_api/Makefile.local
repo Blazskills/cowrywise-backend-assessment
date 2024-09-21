@@ -1,0 +1,93 @@
+build:
+	docker compose -f local.yml up --build -d --remove-orphans
+
+up:
+	docker compose -f local.yml up -d
+
+down:
+	docker compose -f local.yml down
+
+show-logs:
+	docker compose -f local.yml logs
+
+show-logs-api:
+	docker compose -f local.yml logs api
+
+show-logs-postgres:
+	docker compose -f local.yml logs postgres
+
+makemigrations:
+	docker compose -f local.yml run --rm api python manage.py makemigrations
+
+migrate:
+	docker compose -f local.yml run --rm api python manage.py migrate
+
+collectstatic:
+	docker compose -f local.yml run --rm api python manage.py collectstatic --no-input --clear
+
+superuser:
+	docker compose -f local.yml run --rm api python manage.py createsuperuser
+
+superuser-cowrywise:
+	docker compose -f local.yml run --rm api python manage.py createsuperuser
+
+down-v:
+	docker compose -f local.yml down -v
+
+volume:
+	docker volume inspect cowrywise_server_docker_local_postgres_data
+
+admin-cowrywise-db:
+	docker compose -f local.yml exec postgres psql --username=temitope --dbname=adminapidb
+	
+
+psql-querries:
+	\q to quit \list to view database \connect to enter the database gangan \dt to view the data in the database gangan
+
+flake8:
+	docker compose -f local.yml exec api flake8 .
+
+black-check:
+	docker compose -f local.yml exec api black --check --exclude=migrations .
+
+black-diff:
+	docker compose -f local.yml exec api black --diff --exclude=migrations .
+
+black:
+	docker compose -f local.yml exec api black --exclude=migrations .
+
+isort-check:
+	docker compose -f local.yml exec api isort . --check-only --skip venv --skip migrations
+
+isort-diff:
+	docker compose -f local.yml exec api isort . --diff --skip venv --skip migrations
+
+isort:
+	docker compose -f local.yml exec api isort . --skip venv --skip migrations
+
+shell_init:
+	docker compose -f local.yml run api python manage.py shell
+
+shell_create_permission:
+	from core_apps.account.permission import create_default_permissions
+
+#DATABASE BACKUP 
+
+db-backup:
+	docker compose -f local.yml exec postgres backup
+
+list-all-db-backups:
+	docker compose -f local.yml exec postgres backups
+
+#Before restoration, ensure you stop all application using the postgres
+
+db-backup-restore:
+	docker compose -f local.yml exec postgres restore backup_2024_08_15T12_38_49.sql.gz
+
+# UTILITY
+
+env_check:
+	docker compose -f local.yml config
+
+run_makefile:
+	make -f Makefile.local build

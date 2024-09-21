@@ -132,8 +132,7 @@ cython_debug/
 
 !**/migrations/__init__.py
 
-**/.envs
-!**/.envs/.sample
+.envs/.local
 
 # .env
 .venv
@@ -151,6 +150,5 @@ app_cache/*
 *.log
 logs
 
-Makefile.local
-Makefile.prod
+
 .ruff_cache

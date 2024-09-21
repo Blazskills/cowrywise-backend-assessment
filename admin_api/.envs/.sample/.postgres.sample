@@ -1,0 +1,6 @@
+POSTGRES_HOST=postgres
+POSTGRES_PORT=5432
+POSTGRES_DB=adminapidb
+POSTGRES_USER=cowwrywise
+POSTGRES_PASSWORD=Pass123456
+POSTGRESQL_DOCKER_DATABASE_URL=postgres://cowwrywise:Pass123456@postgres:5432/adminapidb
