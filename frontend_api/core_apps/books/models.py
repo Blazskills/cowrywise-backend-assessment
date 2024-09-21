@@ -33,4 +33,3 @@ class Borrow(models.Model):
 
     def __str__(self):
         return f"{self.book_user.first_name} {self.book_user.last_name} borrowed '{self.book.title}' on {self.borrowed_on.strftime('%Y-%m-%d')}"
-            

@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import BookUser
+from .models import Book, BookUser
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -12,3 +12,9 @@ class UserSerializer(serializers.ModelSerializer):
         if BookUser.objects.filter(email=value).exists():
             raise serializers.ValidationError("A user with this email already exists.")
         return value
+
+
+class BookSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Book
+        fields = ['id', 'title', 'author', 'publisher', 'category', 'is_available']

@@ -23,19 +23,31 @@ env = environ.Env()
 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
-BASE_DIR = Path(__file__).resolve().parent.parent
+ROOT_DIR = Path(__file__).resolve().parent.parent
 
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "django-insecure-1xyp&!vj2qjizazz^69t49!k7m*dsak%4=+b*ars_dt^7e0hiu"
+SECRET_KEY = env(
+    "DJANGO_SECRET_KEY",
+    default="oXPWQPA3C3sdBCuBeXUKq3LBp9YDJ33-306p9EAKf1ja1xkWnKY",
+)
 
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = env.bool("DJANGO_DEBUG")
+ALLOWED_HOSTS = [
+    '127.0.0.1', 'localhost',
+]
 
-ALLOWED_HOSTS = []
+CSRF_TRUSTED_ORIGINS = ["http://localhost:8080", "http://127.0.0.1:8080", "http://localhost:9090", "http://127.0.0.1:9090"
+                        ]
+
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost",
+]
+CORS_ALLOW_CREDENTIALS = True
+# Application definition
 
 
 # Application definition
@@ -52,6 +64,8 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
+    "whitenoise.middleware.WhiteNoiseMiddleware",
+    "corsheaders.middleware.CorsMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
@@ -87,7 +101,7 @@ WSGI_APPLICATION = "frontend_api_project.wsgi.application"
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
+        "NAME": ROOT_DIR / "db.sqlite3",
     }
 }
 
@@ -134,3 +148,14 @@ STATIC_URL = "static/"
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 ADMIN_URL = env("DJANGO_ADMIN_URL")
+
+
+STATIC_URL = "/staticfiles/"
+STATIC_ROOT = str(ROOT_DIR / "staticfiles")
+MEDIA_URL = "/mediafiles/"
+
+
+RABBITMQ_HOST = 'localhost'  # Or the actual server IP or DNS if it's remote
+RABBITMQ_PORT = 5672         # The RabbitMQ port for messaging
+RABBITMQ_USER = 'guest'      # Replace with your RabbitMQ username
+RABBITMQ_PASSWORD = 'guest'  # Replace with your RabbitMQ password

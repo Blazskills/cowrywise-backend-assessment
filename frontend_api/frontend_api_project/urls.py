@@ -10,7 +10,7 @@ urlpatterns = [
         "api/v1/",
         include(
             [
-                path("admin/", include("core_apps.books.urls")),
+                path("frontend/", include("core_apps.books.urls")),
             ]
         ),
     ),
