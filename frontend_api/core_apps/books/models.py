@@ -29,7 +29,7 @@ class Borrow(models.Model):
     book_user = models.ForeignKey(BookUser, on_delete=models.CASCADE)
     book = models.ForeignKey(Book, on_delete=models.CASCADE)
     borrowed_on = models.DateTimeField(auto_now_add=True)
-    return_date = models.DateTimeField()
+    return_date = models.DateTimeField(null=True, blank=True)
 
     def __str__(self):
         return f"{self.book_user.first_name} {self.book_user.last_name} borrowed '{self.book.title}' on {self.borrowed_on.strftime('%Y-%m-%d')}"

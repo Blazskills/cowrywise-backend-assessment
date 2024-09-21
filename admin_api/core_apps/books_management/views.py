@@ -8,6 +8,7 @@ from django.shortcuts import get_object_or_404
 from core_apps.books_management.models import Book
 from core_apps.books_management.producer import send_book_message
 from core_apps.books_management.serializers import BookSerializer
+from utils.pagination import LargeResultsSetPagination
 
 # Create your views here.
 
@@ -24,9 +25,33 @@ class BookListCreateView(APIView):
     """
 
     def get(self, request):
+        # Extract query parameters
+        title = request.query_params.get('title')
+        author = request.query_params.get('author')
+        publisher = request.query_params.get('publisher')
+        category = request.query_params.get('category')
+        is_available = request.query_params.get('is_available')
+
         books = Book.objects.all()
-        serializer = BookSerializer(books, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+
+        if title:
+            books = books.filter(title__icontains=title)
+        if author:
+            books = books.filter(author__icontains=author)
+        if publisher:
+            books = books.filter(publisher__icontains=publisher)
+        if category:
+            books = books.filter(category__icontains=category)
+        if is_available is not None:
+            is_available_bool = is_available.lower() == 'true'
+            books = books.filter(is_available=is_available_bool)
+
+        books = books.order_by("id")
+
+        paginator = LargeResultsSetPagination()
+        paginated_books = paginator.paginate_queryset(books, request)
+        serializer = BookSerializer(paginated_books, many=True)
+        return paginator.get_paginated_response(serializer.data)
 
     def post(self, request):
         serializer = BookSerializer(data=request.data)
@@ -59,7 +84,7 @@ class BookDetailView(APIView):
 
     def put(self, request, pk):
         book = get_object_or_404(Book, pk=pk)
-        serializer = BookSerializer(book, data=request.data)
+        serializer = BookSerializer(book, data=request.data, context={'request': request, "book": book}, partial=True)
         if serializer.is_valid():
             serializer.save()
             send_book_message("book_queue_update", serializer.data)

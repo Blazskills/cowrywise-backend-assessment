@@ -10,4 +10,8 @@ urlpatterns = [
     path('books/', views.BookListAPIView.as_view(), name='book-list'),
     path('books/<int:pk>/', views.BookDetailView.as_view(), name='book-detail'),
 
+
+    path('borrow/', views.BorrowBookAPIView.as_view(), name='borrow-create'),
+    path('borrow/<int:pk>/', views.BorrowBookAPIView.as_view(), name='borrow-update'),
+
 ]

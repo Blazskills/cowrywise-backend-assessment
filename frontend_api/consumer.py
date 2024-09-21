@@ -2,7 +2,8 @@ import json
 import pika
 from django.conf import settings
 
-from core_apps.books.models import Book
+from core_apps.books.models import Book, Borrow
+from django.utils import timezone
 
 
 def consume_book_events():
@@ -25,7 +26,6 @@ def consume_book_events():
     channel.queue_declare(queue='book_queue_update', durable=True)
     channel.queue_declare(queue='book_queue_delete', durable=True)
 
-    # Define the callback function to handle book creation
     def handle_book_creation(ch, method, properties, body):
         book_data = json.loads(body)
         print(book_data)
@@ -39,9 +39,20 @@ def consume_book_events():
         )
         print(f"Book created: {book_data['title']}")
 
-    # Define the callback function to handle book updates
     def handle_book_update(ch, method, properties, body):
         book_data = json.loads(body)
+        book_id = book_data['id']
+
+        # Get the book and check if it has been marked as unavailable
+        if book_data['is_available'] is False:
+            print("now unavailable")
+            # Check if the book is currently borrowed and not returned
+            borrowed_books = Borrow.objects.select_related("book_user", "book").filter(book_id=book_id, return_date__isnull=True)
+
+            for borrow in borrowed_books:
+                # Mark the book as returned
+                borrow.return_date = timezone.now()
+                borrow.save()
         book = Book.objects.get(pk=book_data['id'])
         book.title = book_data['title']
         book.author = book_data['author']
@@ -51,11 +62,19 @@ def consume_book_events():
         book.save()
         print(f"Book updated: {book_data['title']}")
 
-    # Define the callback function to handle book deletion
     def handle_book_deletion(ch, method, properties, body):
         book_data = json.loads(body)
         book = Book.objects.get(pk=book_data['id'])
+        # Check if the book exists in borrowed records and hasn't been returned
+        # This line of code useless because cascade will eventually delete all related books in borrow model.
+        borrowed_books = Borrow.objects.select_related("book_user", "book").filter(book_id=book, return_date__isnull=True)
+
+        for borrow in borrowed_books:
+            # Mark the book as returned
+            borrow.return_date = timezone.now()
+            borrow.save()
         book.delete()
+        # force book return from borrowers
         print(f"Book deleted with ID: {book_data['id']}")
 
     # Consume messages from the book creation queue
