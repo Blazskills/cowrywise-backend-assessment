@@ -67,7 +67,7 @@ python manage.py migrate
 python manage.py runserver
 ```
 
-The Frontend API should now be running on [http://localhost:8080](http://localhost:8080).
+The Frontend API should now be running on [http://localhost:8000](http://localhost:8000).
 
 ### 4. Bulk Create Book Users
 
